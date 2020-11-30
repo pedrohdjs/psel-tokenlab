@@ -1,16 +1,22 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const session = require('express-session');
+const logger = require('morgan');
+const config = require('./config.json');
 
-var indexRouter = require('./routes/index');
+const sessionRouter = require('./routes/session.js');
 
-var app = express();
+const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(session({
+    secret: config.api_secret,
+    resave: false,
+    saveUninitialized: false
+}))
 
-app.use('/', indexRouter);
+
+app.use('/session', sessionRouter);
 
 module.exports = app;

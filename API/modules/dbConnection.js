@@ -2,7 +2,7 @@
 const mysql = require("mysql");
 const util = require("util");
 
-export default class dbConnection{
+class dbConnection{
     HOST = '127.0.0.1';
     DATABASE = 'psel-tokenlab';
     USER = "root";
@@ -28,16 +28,16 @@ export default class dbConnection{
      * Perform the given SQL query, and close the connection.
      * queryString must be sanitized before passed as an argument.
      * @param {string} queryString 
-     * @returns {array | false} an array with the results, if they are found, or false, if something goes wrong.
+     * @returns {Promise<array | false>} an array with the results, if they are found, or false, if something goes wrong.
      */
     async query(queryString){
         const query =  util.promisify(this.connection.query).bind(this.connection);
-        queryString = mysql.escape(queryString);
         let res;
         try{
             res = await query(queryString);
         }
         catch (e) {
+            console.log(e);
             res = false;
         }
         finally{
@@ -50,7 +50,7 @@ export default class dbConnection{
     /**
      * Tries to close the database connection, if it is still open.
      * If it is already close, the function does nothing.
-     * @returns {void}
+     * @returns {Promise<void>}
      */
     async close(){
         try{
@@ -62,3 +62,5 @@ export default class dbConnection{
         }
     }
 }
+
+module.exports = dbConnection;
