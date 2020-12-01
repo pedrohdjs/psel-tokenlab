@@ -6,8 +6,11 @@ const mysql = require("mysql");
  * @returns {string | false} the escaped string or false if a potential SQL injection was detected.
  */
 function sanitize(str){
-    if (str.includes(";") || str.includes("=") || str.includes("--")) //Possible SQL injection
-         return false;
+    if (typeof str !== 'string') //Not a string (possibly null or undefined)
+        return false
+    const regex = new RegExp("/'|\"|`|=|--|;/");// Contains ', ", `,=,- or ;
+    if (regex.test(str))//Potential SQL injection
+        return false
     const escapedStr = mysql.escape(str);
     return escapedStr;
 }

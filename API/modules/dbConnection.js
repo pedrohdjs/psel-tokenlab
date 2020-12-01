@@ -15,11 +15,11 @@ class dbConnection{
                                                   password: this.PASSWORD});
         this.connection.connect((err) => {
             if(err){
-                console.log("Connection failed: " + err.stack);
+                console.log("Database connection failed: " + err.stack);
                 return;
             }
             else {
-                console.log('Connection successful! Connected as id ' + this.connection.threadId)
+                console.log('Database connection successful! Connected as id ' + this.connection.threadId)
             }
         })
     }
@@ -28,7 +28,7 @@ class dbConnection{
      * Perform the given SQL query, and close the connection.
      * queryString must be sanitized before passed as an argument.
      * @param {string} queryString 
-     * @returns {Promise<array | false>} an array with the results, if they are found, or false, if something goes wrong.
+     * @returns {Promise<array | false>} an array with the results, if they are found, or false, if there are no results or the query fails.
      */
     async query(queryString){
         const query =  util.promisify(this.connection.query).bind(this.connection);
@@ -37,12 +37,15 @@ class dbConnection{
             res = await query(queryString);
         }
         catch (e) {
-            console.log(e);
+            //console.log(e); //debug
             res = false;
         }
         finally{
-            const end = util.promisify(this.connection.end).bind(this.connection);
-            await end();
+            this.connection.end();
+        }
+        if(Array.isArray(res)){
+            if(res.length <= 0)
+                res = false;
         }
         return res;
     }
@@ -52,10 +55,9 @@ class dbConnection{
      * If it is already close, the function does nothing.
      * @returns {Promise<void>}
      */
-    async close(){
+    close(){
         try{
-            const end = util.promisify(this.connection.end).bind(this.connection);
-            await end();    
+            this.connection.end();    
         }
         finally{
             return;

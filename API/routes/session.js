@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require("../modules/dbConnection.js");
-const sanitize = require('../modules/sanitize.js');
-const util = require('util');
+const {validateCredentials, blockIfLoggedIn, blockIfNotLoggedIn} = require("../modules/middlewares.js");
 
 //Check if there is an existing session
 router.get('/',async function(req,res,next) {
@@ -19,24 +18,9 @@ router.get('/',async function(req,res,next) {
 });
 
 //Login
-//Middleware to authorize or block login
-const authorizeLogin = (req, res, next) => {
-    if(req.session.user){
-        res.status(401).end("User is already logged in."); //401 unauthorized
-        return;
-    }
-    req.body.email = sanitize(req.body.email);
-    req.body.password = sanitize(req.body.password);
-
-    if(!req.body.email || !req.body.password){
-        res.status(400).end("Your credentials may contain unnalowed characters"); //400 bad request
-    }
-    else {
-        next(); //Login authorized
-    }
-};
-
-router.post('/',authorizeLogin, async function(req, res, next) {
+router.post('/',blockIfLoggedIn);
+router.post('/',validateCredentials);
+router.post('/',async function (req, res, next) {
     const email = req.body.email;
     const password = req.body.password;
     const connection = new dbConnection();
@@ -57,16 +41,8 @@ router.post('/',authorizeLogin, async function(req, res, next) {
 
 
 //Logout
-const authorizeLogout = (req, res, next) => {
-    if(!req.session.user){
-        res.status(401).end("User is not logged in."); //401 unauthorized
-    }
-    else {
-        next();
-    }
-};
-
-router.delete('/', authorizeLogout, (req,res,next) => {
+router.delete('/',blockIfNotLoggedIn);
+router.delete('/',function (req,res,next) {
     req.session.destroy();
     const resJSON = {loggedIn: false};
     res.json(resJSON);

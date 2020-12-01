@@ -4,12 +4,13 @@ const logger = require('morgan');
 const config = require('./config.json');
 
 const sessionRouter = require('./routes/session.js');
+const registerRouter = require('./routes/register.js');
 
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(session({
     secret: config.api_secret,
     resave: false,
@@ -17,6 +18,7 @@ app.use(session({
 }))
 
 
-app.use('/session', sessionRouter);
+app.use('/session',sessionRouter);
+app.use('/register',registerRouter);
 
 module.exports = app;
