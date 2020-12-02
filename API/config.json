@@ -1,3 +1,8 @@
 {
-    "api_secret": "ADIGPUBADPGIUBADGPIUBADGPIUAB"
+    "jwt_settings": {
+        "secret": "ADIGPUBADPGIUBADGPIUBADGPIUAB",
+        "options": {
+            "expiresIn": 7200
+        }
+    } 
 }

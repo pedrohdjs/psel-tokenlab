@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
+import AJAXForm from '../../components/AJAXForm';
+import { api_location } from '../../config.json';
+
 
 const Box = styled.div`
     &{
@@ -79,6 +82,10 @@ const FormWrapper = styled.div`
         transition: .4s;
     }
 
+    form > input:last-of-type {
+        margin-bottom: 4%;
+    }
+
     form > input:focus {
         outline: none;
         border: 2px solid var(--dark-blue);
@@ -110,6 +117,18 @@ const FormWrapper = styled.div`
         transition: .4s;
     }
 
+    form > span {
+        width: 80%;
+        height: 6%;
+
+        margin-bottom: 4%;
+        text-align: center;
+
+        font-size: 90%;
+        font-weight: lighter;
+        color: red;
+    }
+
     form > button:focus, form >button:hover {
         width: 70%;
         height: 20%;
@@ -132,7 +151,7 @@ const FormWrapper = styled.div`
         }
 
         form > input:last-of-type {
-            margin-bottom: 8%;
+            margin-bottom: 4%;
         }
 
     }
@@ -147,6 +166,7 @@ const BoxFooter = styled.footer`
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
     }
 `;
 
@@ -161,20 +181,37 @@ const StyledLink = styled(Link)`
 
 
 
-function LoginForm(){
+function LoginPage(){
+    const [loginError, setLoginError] = useState("");
+
+    const submitCallback = async (res) => {
+        const resJSON = await res.json();
+        if (resJSON.loggedIn){
+            setLoginError("");
+            let inTwoHours = new Date();
+            inTwoHours.setTime(inTwoHours.getTime + 1000 * 60 * 60 * 2);
+            document.cookie = `jwt=${resJSON.token}; expires=${inTwoHours.toUTCString}`;
+            window.location.href = "/calendario";
+        }
+        else{
+            setLoginError(resJSON.err);
+        }    
+    }
+
     return (
         <Box>
             <BoxHeader>
                 <h2>Login</h2>
             </BoxHeader>
             <FormWrapper>
-                <form id="loginForm">
+                <AJAXForm id="loginForm" method="POST" action={`${api_location}/session`} callback={submitCallback}>
                     <label form="loginForm" htmlFor="email">E-mail</label>
-                    <input id="email" name="email" type="text"/>
+                    <input id="email" name="email" type="text" required/>
                     <label form="loginForm" htmlFor="password">Senha</label>
-                    <input id="password" name="password" type="password"/>
-                    <button type="button">Fazer login</button>
-                </form>
+                    <input id="password" name="password" type="password" required/>
+                    <span>{loginError}</span>
+                    <button type="submit">Fazer login</button>
+                </AJAXForm>
             </FormWrapper>
             <BoxFooter>
                 <p>
@@ -186,4 +223,4 @@ function LoginForm(){
     )
 }
 
-export default LoginForm;
+export default LoginPage;

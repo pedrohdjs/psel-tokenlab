@@ -161,7 +161,7 @@ const StyledLink = styled(Link)`
 
 
 
-function RegisterForm(){
+function RegisterPage(){
     return (
         <Box>
             <BoxHeader>
@@ -170,9 +170,9 @@ function RegisterForm(){
             <FormWrapper>
                 <form id="registerForm">
                     <label form="registerForm" htmlFor="email">E-mail</label>
-                    <input id="email" name="email" type="text"/>
+                    <input id="email" name="email" type="text" required/>
                     <label form="registerForm" htmlFor="password">Senha</label>
-                    <input id="password" name="password" type="password"/>
+                    <input id="password" name="password" type="password" required/>
                     <button type="button">Cadastrar</button>
                 </form>
             </FormWrapper>
@@ -186,4 +186,4 @@ function RegisterForm(){
     )
 }
 
-export default RegisterForm;
+export default RegisterPage;
