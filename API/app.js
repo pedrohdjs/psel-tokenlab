@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const logger = require('morgan');
-const config = require('./config.json');
+const cookieParser = require('cookie-parser')
 const { useCORSSettings, useJSONres } = require('./modules/middlewares')
 
 const sessionRouter = require('./routes/session.js');
@@ -11,6 +11,7 @@ const app = express();
 
 //Middlewares
 app.use(logger('dev'));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors({origin:true,credentials: true}));

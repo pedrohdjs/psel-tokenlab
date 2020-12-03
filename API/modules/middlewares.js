@@ -15,7 +15,7 @@ const validateCredentials = function (req, res, next) {
 };
 
 const getCurrentUser = function (req,res,next){
-    const token = req.headers['x-acess-token'];
+    const token = req.cookies.jwt;
     jwt.verify(token,jwt_settings.secret,(err, decoded) => {
         if (err){
             req.user = false;
@@ -57,8 +57,8 @@ const useJSONres = function (req, res, next){
 
 //Use CORS settings on the response
 const useCORSSettings = function (req, res, next){
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Origin', "http://localhost:3000");
     res.header('Access-Control-Allow-Methods', "*");
     res.header('Access-Control-Allow-Headers', "*");
     if (req.method === "OPTIONS") {

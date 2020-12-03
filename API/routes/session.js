@@ -3,7 +3,7 @@ const router = express.Router();
 const dbConnection = require('../modules/dbConnection.js');
 const jwt = require('jsonwebtoken');
 const { jwt_settings } = require('../config.json');
-const { validateCredentials, getCurrentUser, blockIfLoggedIn, blockIfNotLoggedIn } = require("../modules/middlewares.js");
+const { validateCredentials, getCurrentUser, blockIfLoggedIn } = require("../modules/middlewares.js");
 
 //Current session info
 router.get('/',getCurrentUser);
@@ -35,9 +35,13 @@ router.post('/',async function (req,res) {
         return res.status(401).end(); //401 unauthorized: user not found
     }
 
+    //Successful login
     const userJSON = {email: dbRes[0].email, id: dbRes[0].id};
     const token = jwt.sign(userJSON,jwt_settings.secret,jwt_settings.options);
-    res.json({loggedIn: true, token: token, email: userJSON.email});
+    let inTwoHours = new Date();
+    inTwoHours.setTime(inTwoHours.getTime() + 1000 * jwt_settings.options.expiresIn);
+    res.header("Set-Cookie",`jwt=${token}; expires=${inTwoHours.toUTCString()}`);
+    res.json({loggedIn: true});
     return res.status(200).end(); //200 OK
 });
 

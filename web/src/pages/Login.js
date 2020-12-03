@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
-import AJAXForm from '../../components/AJAXForm';
-import { api_location } from '../../config.json';
+import AJAXForm from '../components/AJAXForm';
+import { api_location } from '../config.json';
 
 
 const Box = styled.div`
@@ -188,9 +188,6 @@ function LoginPage(){
         const resJSON = await res.json();
         if (resJSON.loggedIn){
             setLoginError("");
-            let inTwoHours = new Date();
-            inTwoHours.setTime(inTwoHours.getTime + 1000 * 60 * 60 * 2);
-            document.cookie = `jwt=${resJSON.token}; expires=${inTwoHours.toUTCString}`;
             window.location.href = "/calendario";
         }
         else{

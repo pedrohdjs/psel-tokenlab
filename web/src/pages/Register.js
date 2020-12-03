@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
+import AJAXForm from '../components/AJAXForm';
+import { api_location } from '../config.json';
 
 const Box = styled.div`
     &{
@@ -79,6 +81,10 @@ const FormWrapper = styled.div`
         transition: .4s;
     }
 
+    form > input:last-of-type {
+        margin-bottom: 4%;
+    }
+
     form > input:focus {
         outline: none;
         border: 2px solid var(--dark-blue);
@@ -110,6 +116,18 @@ const FormWrapper = styled.div`
         transition: .4s;
     }
 
+    form > span {
+        width: 80%;
+        height: 6%;
+
+        margin-bottom: 4%;
+        text-align: center;
+
+        font-size: 90%;
+        font-weight: lighter;
+        color: red;
+    }
+
     form > button:focus, form >button:hover {
         width: 70%;
         height: 20%;
@@ -132,7 +150,7 @@ const FormWrapper = styled.div`
         }
 
         form > input:last-of-type {
-            margin-bottom: 8%;
+            margin-bottom: 4%;
         }
 
     }
@@ -147,6 +165,7 @@ const BoxFooter = styled.footer`
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
     }
 `;
 
@@ -162,19 +181,33 @@ const StyledLink = styled(Link)`
 
 
 function RegisterPage(){
+    const [registerError, setRegisterError] = useState("");
+
+    const submitCallback = async (res) => {
+        const resJSON = await res.json();
+        if (resJSON.loggedIn){
+            setRegisterError("");
+            window.location.href = "/calendario";
+        }
+        else{
+            setRegisterError(resJSON.err);
+        }    
+    }
+
     return (
         <Box>
             <BoxHeader>
                 <h2>Cadastro</h2>
             </BoxHeader>
             <FormWrapper>
-                <form id="registerForm">
+                <AJAXForm id="registerForm" method="POST" action={`${api_location}/register`} callback={submitCallback}>
                     <label form="registerForm" htmlFor="email">E-mail</label>
                     <input id="email" name="email" type="text" required/>
                     <label form="registerForm" htmlFor="password">Senha</label>
                     <input id="password" name="password" type="password" required/>
-                    <button type="button">Cadastrar</button>
-                </form>
+                    <span>{registerError}</span>
+                    <button type="submit">Cadastrar</button>
+                </AJAXForm>
             </FormWrapper>
             <BoxFooter>
                 <p>

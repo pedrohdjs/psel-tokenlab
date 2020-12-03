@@ -18,7 +18,7 @@ function App(){
     //Check for active user session
     useEffect(() => {
         fetchUser();
-    });
+    },[]);
 
     return (
         <BrowserRouter>

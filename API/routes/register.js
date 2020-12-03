@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const { jwt_settings } = require('../config.json');
 const dbConnection = require("../modules/dbConnection.js");
 const {validateCredentials, getCurrentUser, blockIfLoggedIn} = require("../modules/middlewares.js");
 
@@ -15,14 +17,17 @@ router.post('/',async function (req,res) {
 
     const dbRes = await connection.query(sql);
     if(!dbRes){
-        res.json({err: "This email has already been registered."}); 
+        res.json({loggedIn: false, err: "This email has already been registered."}); 
         return res.status(409).end();//409 conflict
     }
 
-    //Registration successful: log the user in
-    const userJSON = {loggedIn: true, email: email, id: dbRes.insertId};
-    req.session.user = userJSON;
-    res.json(userJSON);
+    //Register successfull, log user in
+    const userJSON = {email: email, id: dbRes.insertId};
+    const token = jwt.sign(userJSON,jwt_settings.secret,jwt_settings.options);
+    let inTwoHours = new Date();
+    inTwoHours.setTime(inTwoHours.getTime() + 1000 * jwt_settings.options.expiresIn);
+    res.header("Set-Cookie",`jwt=${token}; expires=${inTwoHours.toUTCString()}`);
+    res.json({loggedIn: true});
     return res.status(200).end(); //200 OK
 })
 

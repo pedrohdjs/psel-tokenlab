@@ -15,11 +15,12 @@ function AJAXForm(props){
         ev.preventDefault();
         const data = getFormDataAsJSON(ev.target);
         const url = ev.target.action;
+        
         const reqSettings = {method: props.method,
                              headers: {
-                                 //'Accept': 'application/json',
                                  'Content-Type': 'application/json'
                              },
+                             credentials: 'include',
                              body: JSON.stringify(data)}
         try{
             const res = await fetch(url,reqSettings);
