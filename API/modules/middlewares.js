@@ -2,6 +2,11 @@ const sanitize = require('./sanitize');
 const jwt = require('jsonwebtoken');
 const { jwt_settings } = require('../config.json');
 
+const debug = function (req, res, next){
+    console.log(req.cookies)
+    next();
+}
+
 //Validate passed email and password.
 const validateCredentials = function (req, res, next) {
     req.body.email = sanitize(req.body.email);
@@ -74,5 +79,6 @@ module.exports = {
     blockIfLoggedIn: blockIfLoggedIn,
     blockIfNotLoggedIn: blockIfNotLoggedIn,
     useJSONres: useJSONres,
-    useCORSSettings: useCORSSettings
+    useCORSSettings: useCORSSettings,
+    debug: debug
 }

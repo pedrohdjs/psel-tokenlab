@@ -1,4 +1,5 @@
 import React from 'react';
+import { req_settings } from '../config.json';
 
 function AJAXForm(props){
 
@@ -16,11 +17,8 @@ function AJAXForm(props){
         const data = getFormDataAsJSON(ev.target);
         const url = ev.target.action;
         
-        const reqSettings = {method: props.method,
-                             headers: {
-                                 'Content-Type': 'application/json'
-                             },
-                             credentials: 'include',
+        const reqSettings = {...req_settings,
+                             method: props.method,
                              body: JSON.stringify(data)}
         try{
             const res = await fetch(url,reqSettings);
