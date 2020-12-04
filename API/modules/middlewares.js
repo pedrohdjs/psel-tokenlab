@@ -12,7 +12,7 @@ const validateCredentials = function (req, res, next) {
     req.body.email = sanitize(req.body.email);
     req.body.password = sanitize(req.body.password);
     if(!req.body.email || !req.body.password){
-        res.status(400).json({err:"Your credentials may contain unnalowed characters"}); //400 bad request
+        return res.status(400).json({err:"Your credentials may contain unnalowed characters"}).end(); //400 bad request
     }
     else {
         next(); //Login authorized
@@ -59,7 +59,6 @@ const useJSONres = function (req, res, next){
     next();
 };
 
-
 //Use CORS settings on the response
 const useCORSSettings = function (req, res, next){
     res.header('Access-Control-Allow-Credentials', 'true');
@@ -72,6 +71,31 @@ const useCORSSettings = function (req, res, next){
     next();
 }
 
+//Sanitize, validate and check for request type on /events endpoint
+const validateEventsGetRequest = function (req, res, next){
+    req.query.day = Number(req.query.day);
+    req.query.month = Number(req.query.month);
+    req.query.year = Number(req.query.year);
+
+    req.query.day = (req.query.day !== NaN) ? req.query.day : false;
+    req.query.month = (req.query.month !== NaN) ? req.query.month : false;
+    req.query.year = (req.query.year !== NaN) ? req.query.year : false;
+
+    console.log(req.query);
+
+    if(req.query.year && req.query.month && !req.query.day){
+        req.type = 'month';
+        next();
+    }
+    else if (req.query.year && req.query.month && req.query.day){
+        req.type = 'day';
+        next();
+    }
+    else {
+        return res.status(400).json({err: "Invalid request body"}).end(); //400 bad request
+    }
+}
+
 
 module.exports = {
     validateCredentials: validateCredentials,
@@ -80,5 +104,6 @@ module.exports = {
     blockIfNotLoggedIn: blockIfNotLoggedIn,
     useJSONres: useJSONres,
     useCORSSettings: useCORSSettings,
+    validateEventsGetRequest: validateEventsGetRequest,
     debug: debug
 }

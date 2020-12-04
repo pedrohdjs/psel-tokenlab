@@ -122,7 +122,7 @@ function Calendar(props){
     let i = 0; //Day index for current/next month
     let j = firstWeekdayInMonth(year,month); //Unpushed days from previous month
     console.log(j);
-    while(rows.length<42){
+    while(rows.length<42){//Total boxes in the calendar
         if(j>0){
             rows.push((<li>{previousMonthDays-j+1}</li>));
             j--;

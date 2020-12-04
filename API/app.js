@@ -6,6 +6,8 @@ const { useCORSSettings, useJSONres, debug } = require('./modules/middlewares')
 
 const sessionRouter = require('./routes/session.js');
 const registerRouter = require('./routes/register.js');
+const eventsRouter = require('./routes/events.js');
+
 
 const app = express();
 
@@ -22,5 +24,6 @@ app.use(useJSONres);
 //Routes
 app.use('/session',sessionRouter);
 app.use('/register',registerRouter);
+app.use('/events',eventsRouter);
 
 module.exports = app;

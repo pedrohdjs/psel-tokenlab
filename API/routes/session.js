@@ -1,9 +1,10 @@
 const express = require('express');
-const router = express.Router();
-const dbConnection = require('../modules/dbConnection.js');
+const DbConnection = require('../modules/DbConnection.js');
 const jwt = require('jsonwebtoken');
 const { jwt_settings } = require('../config.json');
 const { validateCredentials, getCurrentUser, blockIfLoggedIn } = require("../modules/middlewares.js");
+
+const router = express.Router();
 
 //Current session info
 router.get('/',getCurrentUser);
@@ -26,7 +27,7 @@ router.post('/',validateCredentials);
 router.post('/',async function (req,res) {
     const email = req.body.email;
     const password = req.body.password;
-    const connection = new dbConnection();
+    const connection = new DbConnection();
     const sql = `SELECT id, email FROM Users WHERE email = ${email} AND password=PASSWORD(${password})`;
 
     const dbRes = await connection.query(sql);

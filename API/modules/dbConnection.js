@@ -2,7 +2,7 @@
 const mysql = require("mysql");
 const util = require("util");
 
-class dbConnection{
+class DbConnection{
     HOST = '127.0.0.1';
     DATABASE = 'psel-tokenlab';
     USER = "root";
@@ -65,4 +65,4 @@ class dbConnection{
     }
 }
 
-module.exports = dbConnection;
+module.exports = DbConnection;

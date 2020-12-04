@@ -1,9 +1,10 @@
 const express = require('express');
-const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { jwt_settings } = require('../config.json');
-const dbConnection = require("../modules/dbConnection.js");
+const DbConnection = require("../modules/DbConnection.js");
 const {validateCredentials, getCurrentUser, blockIfLoggedIn} = require("../modules/middlewares.js");
+
+const router = express.Router();
 
 //Registration
 router.post('/',getCurrentUser);
@@ -12,7 +13,7 @@ router.post('/',validateCredentials);
 router.post('/',async function (req,res) {
     const email = req.body.email;
     const password = req.body.password;
-    const connection = new dbConnection();
+    const connection = new DbConnection();
     const sql = `INSERT INTO Users (email,password) VALUES (${email},PASSWORD(${password}));`;
 
     const dbRes = await connection.query(sql);
