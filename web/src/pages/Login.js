@@ -188,7 +188,8 @@ function LoginPage(){
         const resJSON = await res.json();
         if (resJSON.loggedIn){
             setLoginError("");
-            window.location.href = "/calendario";
+            const today = new Date();
+            window.location.href = `/calendario/${today.getMonth()+1}/${today.getFullYear()}`;
         }
         else{
             setLoginError(resJSON.err);

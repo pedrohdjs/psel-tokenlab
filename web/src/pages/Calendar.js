@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Redirect, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import AppNav from '../components/AppNav';
 import Calendar from '../components/Calendar';
@@ -20,11 +21,15 @@ const CalendarContainer = styled.div`
 `;
 
 function CalendarPage(){
+    const params = useParams();
+    const month = params.m-1;
+    const year = params.y;
+
     return (
         <Viewport>
             <AppNav/>
             <CalendarContainer>
-                <Calendar/>
+                <Calendar month={month} year={year}/>
             </CalendarContainer>
         </Viewport>
         

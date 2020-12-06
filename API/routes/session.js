@@ -41,7 +41,7 @@ router.post('/',async function (req,res) {
     const token = jwt.sign(userJSON,jwt_settings.secret,jwt_settings.options);
     let inTwoHours = new Date();
     inTwoHours.setTime(inTwoHours.getTime() + 1000 * jwt_settings.options.expiresIn);
-    res.header("Set-Cookie",`jwt=${token}; expires=${inTwoHours.toUTCString()}`);
+    res.header("Set-Cookie",`jwt=${token}; path=/;expires=${inTwoHours.toUTCString()}`);
     res.json({loggedIn: true});
     return res.status(200).end(); //200 OK
 });

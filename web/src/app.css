@@ -11,7 +11,8 @@
     --clear-blue: #C0FDFB;
     --blue: #3A7CA5;
     --dark-blue: #1985A1;
-  
+    --red: rgb(223, 64, 64);
+    --green: rgb(78, 231, 98);
   }
   
   #root {

@@ -6,7 +6,7 @@ function AJAXForm(props){
     //Get the data from all form inputs as a JSON object
     const getFormDataAsJSON = (form) => {
         const data = {};
-        const inputs = form.querySelectorAll("input");
+        const inputs = form.querySelectorAll("input, textarea");
         inputs.forEach(el => {data[el.name] = el.value})
         return data;
     }

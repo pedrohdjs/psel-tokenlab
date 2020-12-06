@@ -21,12 +21,14 @@ const firstWeekdayInMonth = function(year, month){
 
 /**
  * @param {number} year A year
- * @param {number} month A month (months indexed from 0 to 11)
+ * @param {number} month A month (months indexed from 1 to 12)
  * @returns {[number,number]}, the year of the next month and the next month
  */
 const nextMonth = function(year, month){
-    if (month == 11){
-        return [year+1,0];
+    year = Number(year);
+    month = Number(month);
+    if (month === 12){
+        return [year+1,1];
     }
     else 
         return [year, month+1];
@@ -34,12 +36,14 @@ const nextMonth = function(year, month){
 
 /**
  * @param {number} year A year
- * @param {number} month A month (months indexed from 0 to 11)
+ * @param {number} month A month (months indexed from 1 to 12)
  * @returns {[number,number]}, the year of the previous month and the previous month
  */
 const previousMonth = function(year, month){
-    if (month == 0){
-        return [year-1,11];
+    year = Number(year);
+    month = Number(month);
+    if (month === 1){
+        return [year-1,12];
     }
     else 
         return [year, month-1];

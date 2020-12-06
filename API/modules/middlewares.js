@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { jwt_settings } = require('../config.json');
 
 const debug = function (req, res, next){
-    console.log(req.cookies)
+    //console.log(req.cookies)
     next();
 }
 
@@ -81,8 +81,6 @@ const validateEventsGetRequest = function (req, res, next){
     req.query.month = (req.query.month !== NaN) ? req.query.month : false;
     req.query.year = (req.query.year !== NaN) ? req.query.year : false;
 
-    console.log(req.query);
-
     if(req.query.year && req.query.month && !req.query.day){
         req.type = 'month';
         next();
@@ -96,6 +94,66 @@ const validateEventsGetRequest = function (req, res, next){
     }
 }
 
+const validateEventsPostRequest = function (req, res, next){
+    req.body.day = Number(req.body.day);
+    req.body.month = Number(req.body.month);
+    req.body.year = Number(req.body.year);
+
+    req.body.day = (req.body.day !== NaN) ? req.body.day : false;
+    req.body.month = (req.body.month !== NaN) ? req.body.month : false;
+    req.body.year = (req.body.year !== NaN) ? req.body.year : false;
+    
+    const timeRegex = new RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
+    req.body.start = (timeRegex.test(req.body.start)) ? req.body.start : false;
+    req.body.end = (timeRegex.test(req.body.end)) ? req.body.end : false;
+
+    req.body.description = sanitize(req.body.description);
+
+    if(!req.body.day || !req.body.month || !req.body.year || !req.body.start || !req.body.end || !req.body.description){
+        return res.status(400).json({err: "Invalid request body"}).end(); //400 bad request
+    }
+    else{
+        next();
+    }
+}
+
+const validateEventsPutRequest = function (req, res, next){
+    req.body.day = Number(req.body.day);
+    req.body.month = Number(req.body.month);
+    req.body.year = Number(req.body.year);
+
+    req.body.day = (req.body.day !== NaN) ? req.body.day : false;
+    req.body.month = (req.body.month !== NaN) ? req.body.month : false;
+    req.body.year = (req.body.year !== NaN) ? req.body.year : false;
+    
+    const timeRegex = new RegExp("^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$");
+    req.body.start = (timeRegex.test(req.body.start)) ? req.body.start : false;
+    req.body.end = (timeRegex.test(req.body.end)) ? req.body.end : false;
+
+    req.body.description = sanitize(req.body.description);
+    req.body.id = (typeof(req.body.id === "number")) ? req.body.id : false;
+
+
+    if(!req.body.day || !req.body.month || !req.body.year || !req.body.start || !req.body.end || !req.body.description){
+        return res.status(400).json({err: "Invalid request body"}).end(); //400 bad request
+    }
+    else{
+        next();
+    }
+}
+
+const validateEventsDeleteRequest = function (req, res, next){
+    req.body.id = (typeof(req.body.id === "number")) ? req.body.id : false;
+    
+    if(!req.body.id){
+        return res.status(400).json({err: "Invalid request body"}).end(); //400 bad request
+    }
+    else{
+        next();
+    }
+}
+
+
 
 module.exports = {
     validateCredentials: validateCredentials,
@@ -105,5 +163,8 @@ module.exports = {
     useJSONres: useJSONres,
     useCORSSettings: useCORSSettings,
     validateEventsGetRequest: validateEventsGetRequest,
+    validateEventsPostRequest: validateEventsPostRequest,
+    validateEventsPutRequest: validateEventsPutRequest,
+    validateEventsDeleteRequest: validateEventsDeleteRequest,
     debug: debug
 }

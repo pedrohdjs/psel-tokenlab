@@ -23,7 +23,7 @@ router.post('/',async function (req,res) {
     }
 
     //Register successfull, log user in
-    const userJSON = {email: email, id: dbRes.insertId};
+    const userJSON = {email: email.replace("'","").replace("'",""), id: dbRes.insertId};
     const token = jwt.sign(userJSON,jwt_settings.secret,jwt_settings.options);
     let inTwoHours = new Date();
     inTwoHours.setTime(inTwoHours.getTime() + 1000 * jwt_settings.options.expiresIn);

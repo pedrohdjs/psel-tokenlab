@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {Link} from 'react-router-dom';
 import { nextMonth, previousMonth, daysInMonth, firstWeekdayInMonth }  from '../modules/DateUtil.js';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import DayPreview from './DayPreview.js';
+import { api_location, req_settings } from '../config.json';
+
 
 const Container = styled.div`
     &{
@@ -30,13 +33,15 @@ const Header = styled.header`
     }
 `;
 
-const Button = styled.button`
+const Button = styled(Link)`
     border: none;
     margin: 0;
     padding: 0;
     width: auto;
     overflow: visible;
     transition: .4s;
+
+    text-decoration: none;
 
     color: var(--grey);
     font-size: 200%;
@@ -97,50 +102,74 @@ const Body = styled.ul`
 
 
 function Calendar(props){
-    const [month, setMonth] = useState(new Date().getMonth());
-    const [year, setYear] = useState(new Date().getUTCFullYear());
+    
+    const month = Number(props.month);
+    const year = Number(props.year);
+
+    const [events,setEvents] = useState(() => {
+        const arr = [];
+        for(let i = 1; i<=31;i++){
+            arr[i] = [];
+        }
+        return arr;
+    })
+
+    const fetchEvents = async () => {
+        const url = `${api_location}/events?month=${month+1}&year=${year}`;
+        const reqConfig = {...req_settings, method: "GET"};
+        const res = await fetch(url,reqConfig);
+        const resJSON = await res.json();
+        const newEvents = [];
+        for(let i = 1; i<=31;i++){
+            newEvents[i] = [];
+        }
+        Object.keys(resJSON.events).forEach((key) => {
+            const currentEvent = resJSON.events[key];
+            const day = Number((currentEvent.date));
+            newEvents[day].push(currentEvent);
+        })
+        setEvents(newEvents);
+    }
+
+    useEffect(() => {
+        fetchEvents();
+    },[month]);
+
+    const [nextY, nextM] = nextMonth(year,month+1);
+    const nextMonthLink = `/calendario/${nextM}/${nextY}`
+    const [prevY, prevM] = previousMonth(year,month+1);
+    const prevMonthLink = `/calendario/${prevM}/${prevY}`
+
+
+   //Generate calendar for current year and month
     let rows = [];
-
-    const updateToNextMonth = () => {
-        const [y,m] = nextMonth(year,month);
-        setMonth(m);
-        setYear(y);
-    }
-
-    const updateToPreviousMonth = () => {
-        const [y,m] = previousMonth(year,month);
-        setMonth(m);
-        setYear(y);
-    }
-
-
-   
-    rows = [];
     const currentMonthDays = daysInMonth(year,month);
     const [prevMonthYear, prevMonth] = previousMonth(year,month);
     const previousMonthDays = daysInMonth(prevMonthYear,prevMonth);
-    let i = 0; //Day index for current/next month
+    let i = 1; //Day index for current month
     let j = firstWeekdayInMonth(year,month); //Unpushed days from previous month
-    console.log(j);
+    let k = 1; //Day index for next month
     while(rows.length<42){//Total boxes in the calendar
         if(j>0){
-            rows.push((<li>{previousMonthDays-j+1}</li>));
+            rows.push(<li key={i-j}><DayPreview inactive day={previousMonthDays-j+1} month={month+1}/></li>);
             j--;
         }
-        else {
-            rows.push(<li>{i%(currentMonthDays)+1}</li>)
+        else if ( i<= currentMonthDays){
+            rows.push(<li key={i}><DayPreview day={i} events={events[i]} month={month+1} year={year}/></li>)
             i++;
         }
+        else{
+            rows.push(<li key={i+k}><DayPreview inactive day={k} month={month+1}/></li>)
+            k++;
+        }
     }
-
-
 
     return(
         <Container>
             <Header>
-                <Button onClick={updateToPreviousMonth}>&#10094;</Button>
+                <Button to={prevMonthLink}>&#10094;</Button>
                 <h2>{month + 1}/{year}</h2>
-                <Button onClick={updateToNextMonth}>&#10095;</Button>
+                <Button to={nextMonthLink}>&#10095;</Button>
             </Header>
             <Body>
                 <li>Dom</li>
